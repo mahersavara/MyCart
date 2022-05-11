@@ -3,6 +3,8 @@ package hanu.a2_1901040122;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.os.HandlerCompat;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
         //?Load Product api
         String url = "https://mpr-cart-api.herokuapp.com/products";
+        List<Product> products = new ArrayList<>();
+        //?Task Chung
         Handler handler = HandlerCompat.createAsync(Looper.getMainLooper());
+        //Getting api
         Constants.executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -60,9 +65,6 @@ public class MainActivity extends AppCompatActivity {
                             // ! this will detail what subject will get into!
                             // #JSONARRAY FOR ARRAY TYPE AND JSON OBJECT FOR OBJECT TYPE.
                             JSONArray root = new JSONArray(json);
-                            List<Product> products = new ArrayList<>();
-                            Product product;
-
 
 
 //                            Log.i("rootttt", root.toString());
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
                                 String thumbnail = jsonProduct.getString("thumbnail");
                                 String name = jsonProduct.getString("name");
                                 double unitPrice = jsonProduct.getDouble("unitPrice");
-                                product = new Product(id, thumbnail, name, unitPrice);
+                                Product product = new Product(id, thumbnail, name, unitPrice);
 //                                Toast.makeText(MainActivity.this, product.toString(), Toast.LENGTH_SHORT).show();
                                 products.add(product);
                             }
@@ -94,6 +96,28 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        //Showing Image
+        Constants.executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (products != null ) {
+                    for ( int i = 0; i <products.size();i++) {
+//?co the sai
+                        Bitmap bitmap = downloadImage(products.get(i).getThumbnail());
+
+                        if (bitmap !=null ) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+//                            imageView.setImageBitmap(bitmap)
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        });
+
     }
 
     //Method to load restApi
@@ -122,6 +146,19 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
+
+    //!Method to Download Image
+    private Bitmap downloadImage(String link) {
+        try {
+            URL url = new URL(link);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection(); connection.connect();
+            InputStream is = connection.getInputStream(); Bitmap bitmap = BitmapFactory.decodeStream(is);
+            return bitmap;
+        } catch (MalformedURLException e) { e.printStackTrace();
+        } catch (IOException e) { e.printStackTrace();
+        }
+        return null;
+    }
 
     // !Insist the main menu
     // method to inflate the options menu when
