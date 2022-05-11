@@ -2,6 +2,9 @@ package hanu.a2_1901040122;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.os.HandlerCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +14,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
+import android.view.inputmethod.EditorInfo;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -26,20 +31,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import hanu.a2_1901040122.Adapter.ProductAdapter;
 import hanu.a2_1901040122.models.Constants.Constants;
 import hanu.a2_1901040122.models.Product.Product;
 
+
+
 public class MainActivity extends AppCompatActivity {
 
+    RecyclerView recyclerView;
+    ProductAdapter adapter;
+    List<Product> products = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        recyclerView = findViewById(R.id.ProductList);
+
 
 
         //?Load Product api
         String url = "https://mpr-cart-api.herokuapp.com/products";
-        List<Product> products = new ArrayList<>();
+
         //?Task Chung
         Handler handler = HandlerCompat.createAsync(Looper.getMainLooper());
         //Getting api
@@ -81,10 +94,19 @@ public class MainActivity extends AppCompatActivity {
                                 products.add(product);
                             }
 
-                            for(int i= 0; i< products.size();i++){
-                                Log.i("AAA",products.get(i).toString());
-                            }
-                            //
+//                            for(int i= 0; i< products.size();i++){
+//                                Log.i("AAA",products.get(i).toString());
+//                            }
+                            //#Oke
+
+                            adapter = new ProductAdapter(products, MainActivity.this);
+
+//                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this);
+                            GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,2);
+
+                            recyclerView.setAdapter(adapter);
+                            recyclerView.setLayoutManager(gridLayoutManager);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -96,25 +118,23 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        //Showing Image
-        Constants.executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (products != null ) {
-                    for ( int i = 0; i <products.size();i++) {
-//?co the sai
-                        Bitmap bitmap = downloadImage(products.get(i).getThumbnail());
 
-                        if (bitmap !=null ) {
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-//                            imageView.setImageBitmap(bitmap)
-                                }
-                            });
-                        }
-                    }
-                }
+
+        SearchView searchView = findViewById(R.id.searchProduct);
+//        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
             }
         });
 
@@ -147,18 +167,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //!Method to Download Image
-    private Bitmap downloadImage(String link) {
-        try {
-            URL url = new URL(link);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection(); connection.connect();
-            InputStream is = connection.getInputStream(); Bitmap bitmap = BitmapFactory.decodeStream(is);
-            return bitmap;
-        } catch (MalformedURLException e) { e.printStackTrace();
-        } catch (IOException e) { e.printStackTrace();
-        }
-        return null;
-    }
+
 
     // !Insist the main menu
     // method to inflate the options menu when

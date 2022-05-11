@@ -1,5 +1,20 @@
 package hanu.a2_1901040122.models.Product;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
+
+import androidx.core.os.HandlerCompat;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import hanu.a2_1901040122.models.Constants.Constants;
+
 public class Product {
     Integer Id;
     String Thumbnail;
@@ -47,6 +62,7 @@ public class Product {
     public void setName(String name) {
         this.name = name;
     }
+
 
     @Override
     public String toString() {
