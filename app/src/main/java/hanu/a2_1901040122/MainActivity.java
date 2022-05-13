@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -14,6 +16,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -32,6 +35,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import hanu.a2_1901040122.Adapter.ProductAdapter;
+import hanu.a2_1901040122.data.OrderHelper;
 import hanu.a2_1901040122.models.Constants.Constants;
 import hanu.a2_1901040122.models.Product.Product;
 
@@ -93,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 //                                Toast.makeText(MainActivity.this, product.toString(), Toast.LENGTH_SHORT).show();
                                 products.add(product);
                             }
-
+//                            Log.i("AAA",products.toString());
 //                            for(int i= 0; i< products.size();i++){
 //                                Log.i("AAA",products.get(i).toString());
 //                            }
@@ -178,6 +182,25 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item){
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.btnCart) {
+//            Log.i("linhhh","Clicked");
+            Intent myIntent = new Intent(MainActivity.this,CartActivity.class);
+            myIntent.putExtra("key", products.toString());
+            MainActivity.this.startActivity(myIntent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+
 
 
 }

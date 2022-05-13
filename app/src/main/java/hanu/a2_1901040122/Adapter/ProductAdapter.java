@@ -1,6 +1,10 @@
 package hanu.a2_1901040122.Adapter;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -31,14 +35,18 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import hanu.a2_1901040122.MainActivity;
 import hanu.a2_1901040122.R;
+import hanu.a2_1901040122.data.OrderHelper;
 import hanu.a2_1901040122.models.Constants.Constants;
+import hanu.a2_1901040122.models.Order.Order;
 import hanu.a2_1901040122.models.Product.Product;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> implements Filterable {
     //save product
     List<Product> products = new ArrayList<>();
     List<Product> fullProducts = new ArrayList<>();
+    List<Order> orders= new ArrayList<>();
     // Lưu Context để dễ dàng truy cập
     private Context mContext;
 
@@ -60,18 +68,23 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             productTitle = itemView.findViewById(R.id.txtTitle);
             productPrice = itemView.findViewById(R.id.txtPrice);
             btnAdd = itemView.findViewById(R.id.btnCart);
+            int pos = itemview.getId();
+
 
             //Xử lý khi nút Chi tiết được bấm
             //! co the implement Recycle View them de them function
-            btnAdd.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(view.getContext(),
-                            productTitle.getText() +" | "
-                                    + " Demo function", Toast.LENGTH_SHORT)
-                            .show();
-                }
-            });
+//            btnAdd.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    Toast.makeText(view.getContext(),
+//                            pos +" | "
+//                                    + " Demo function", Toast.LENGTH_SHORT)
+//                            .show();
+//
+//
+//
+//                }
+//            });
         }
     }
 
@@ -107,6 +120,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         NumberFormat formatter = new DecimalFormat("#,###");
         String formattedNumber = formatter.format(product.getPrice());
         holder.productPrice.setText("đ̳ "+formattedNumber);
+        holder.btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+             addprotuctToCart(product,mContext);
+             notifyItemChanged(position);
+            }
+        });
 //        holder.productImageView.setImageResource(R.drawable.image);
 
 //            URL url = new URL(product.getThumbnail());
@@ -193,5 +213,74 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         }
         return null;
     }
+
+
+    //!TODO:Additem to cart
+    private boolean addprotuctToCart(Product product, Context mContext) {
+        boolean isAdded = false;
+        int pos = -1;
+        //save in db
+        //connect db
+        OrderHelper orderHelper = new OrderHelper(mContext);
+        SQLiteDatabase db = orderHelper.getWritableDatabase();
+        // manipulate db
+
+        String Query = "Select * from orders where product_id = " + product.getId();
+        Cursor cursor = db.rawQuery(Query,null);
+        if(cursor.getCount() <= 0) {
+            cursor.close();
+        } else {
+            isAdded=true;
+            cursor.close();
+        }
+
+//        for( int i =0; i< orders.size();i++){
+//            if(orders.get(i).getId()== product.getId()) {
+//                pos=i;
+//                Log.i("Trung`","Trung`");
+//                isAdded = true;
+//                //thuc hien update
+//            }
+//        }
+        if (!isAdded) {
+            Order order = new Order(product.getId(),product.getThumbnail(),product.getName(),product.getPrice(),1);
+            orders.add(order);
+
+            String sql = "INSERT INTO orders(name,image, price, quantity,product_id) VALUES (?,?, ?, ?, ?)";
+            SQLiteStatement statement = db.compileStatement(sql);
+            // bind params
+            statement.bindString(1, product.getName());
+            statement.bindString(2, product.getThumbnail());
+            //!TODO : CHECK LAI CAI PRICE NAY
+            statement.bindDouble(3,product.getPrice());
+//     !TODO   if() -> chinh lai cai quantity nay ( ca 3 cai tren)
+            statement.bindLong(4,1);
+            statement.bindLong(5,product.getId());
+
+            // run query
+            long id = statement.executeInsert(); // auto generated id
+            // close connection
+            db.close();
+            return id > 0;
+        } else {
+            String strUpdate = "UPDATE orders SET quantity = quantity +1 WHERE product_id = "+ product.getId();
+           db.execSQL(strUpdate);
+        }
+
+        // create statement
+
+        db.close();
+        return true;
+    }
+
+//   private void Onclick(View v,int pos) {
+//       Product product = products.get(pos);
+////       check if exit
+//       Order order = new Order(product.getId(),product.getThumbnail(),product.getName(),product.getPrice(),"1")
+//
+//
+//   }
+
+
 
 }
