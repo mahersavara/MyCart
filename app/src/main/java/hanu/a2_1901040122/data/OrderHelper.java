@@ -30,10 +30,10 @@ public class OrderHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
         Log.w("My Orders", "My Orders: upgrading DB; dropping/recreating tables.");
-    // drop old tables
-        db.execSQL("DROP TABLE IF EXISTS friends");
-    // other tables here
-    // create new tables
+        // drop old tables
+        db.execSQL("DROP TABLE IF EXISTS orders");
+        // other tables here
+        // create new tables
         onCreate(db);
     }
 }

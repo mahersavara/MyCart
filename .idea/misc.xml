@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/ic_add_cart_24.xml" value="0.1105" />
+        <entry key="app/src/main/res/drawable/ic_search.xml" value="0.1755" />
         <entry key="app/src/main/res/drawable/ic_shopping_cart.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/shape_btn_add_cart.xml" value="0.1105" />
         <entry key="app/src/main/res/drawable/shape_btn_add_sub.xml" value="0.249" />

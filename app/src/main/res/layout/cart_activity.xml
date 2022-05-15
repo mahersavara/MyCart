@@ -16,7 +16,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginTop="20dp"
         />
-<!--    This start Constrain must be reminded again-->
+    <!--    This start Constrain must be reminded again-->
     <TextView
         android:id="@+id/txtCartID"
         android:layout_width="wrap_content"

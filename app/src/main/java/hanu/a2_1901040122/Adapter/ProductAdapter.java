@@ -25,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.core.os.HandlerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -123,8 +125,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-             addprotuctToCart(product,mContext);
-             notifyItemChanged(position);
+                addprotuctToCart(product,mContext);
+//             holder.btnAdd.start
+                holder.btnAdd.animate().setDuration(500).rotationBy(360f).start();
+                Toast.makeText(mContext, "Product added",Toast.LENGTH_SHORT).show();
+//                Snackbar.make(mContext,"Addedd",Snackbar.LENGTH_SHORT).setDuration(1000).show();
             }
         });
 //        holder.productImageView.setImageResource(R.drawable.image);
@@ -201,7 +206,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
 
 
-        //!Method to Download Image
+    //!Method to Download Image
     private Bitmap downloadImage(String link) {
         try {
             URL url = new URL(link);
@@ -260,16 +265,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             // run query
             long id = statement.executeInsert(); // auto generated id
             // close connection
-            db.close();
             return id > 0;
         } else {
             String strUpdate = "UPDATE orders SET quantity = quantity +1 WHERE product_id = "+ product.getId();
-           db.execSQL(strUpdate);
+            db.execSQL(strUpdate);
         }
+
+        db.close();
 
         // create statement
 
-        db.close();
         return true;
     }
 

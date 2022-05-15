@@ -71,7 +71,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         }
     }
 
-//Tao object OrderAddapter
+    //Tao object OrderAddapter
     public OrderAdapter(List _orders, Context mContext) {
         this.orders = _orders;
         this.mContext = mContext;
@@ -140,7 +140,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         holder.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                increaseOrderItem(order,mContext);
+                increaseOrderItem(mContext,position);
                 TextView sum =(( CartActivity) mContext).findViewById(R.id.txtTotalPrice);
                 Double Total_Price =(Double) 0.0;
                 for (int i=0;i<orders.size();i++) {
@@ -149,13 +149,13 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                 NumberFormat formatter = new DecimalFormat("#,###");
                 String formattedNumber = formatter.format(Total_Price);
                 sum.setText("đ̳ "+formattedNumber);
-                notifyItemChanged(position);
+                holder.btnAdd.animate().setDuration(500).rotationBy(360f).start();
             }
         });
         holder.btnSub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                decreaseOrderItem(order,mContext);
+                decreaseOrderItem(mContext,position);
                 TextView sum =(( CartActivity) mContext).findViewById(R.id.txtTotalPrice);
                 Double Total_Price =(Double) 0.0;
                 for (int i=0;i<orders.size();i++) {
@@ -164,7 +164,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
                 NumberFormat formatter = new DecimalFormat("#,###");
                 String formattedNumber = formatter.format(Total_Price);
                 sum.setText("đ̳ "+formattedNumber);
-                notifyItemChanged(position);
+                holder.btnSub.animate().setDuration(500).rotationBy(360f).start();
             }
         });
 
@@ -192,33 +192,45 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
 
 
-    private boolean increaseOrderItem(Order order, Context mContext) {
+    private boolean increaseOrderItem( Context mContext,int position) {
+        System.out.print("Runnn");
         OrderHelper orderHelper = new OrderHelper(mContext);
         SQLiteDatabase db = orderHelper.getWritableDatabase();
-        order.setQuantity(order.getQuantity()+1);
-        String strUpdate = "UPDATE orders SET quantity = quantity +1 WHERE product_id = "+ order.getId();
+        String strUpdate = "UPDATE orders SET quantity = quantity +1 WHERE product_id = "+ orders.get(position).getId();
+        orders.get(position).setQuantity(orders.get(position).getQuantity()+1);
         db.execSQL(strUpdate);
+        notifyItemChanged(position);
         db.close();
         return true;
     }
 
 
-private boolean decreaseOrderItem(Order order,Context mContext) {
-    OrderHelper orderHelper = new OrderHelper(mContext);
-    SQLiteDatabase db = orderHelper.getWritableDatabase();
-    if(order.getQuantity()==1) {
-        //quantity =1 -> xoa
-        String strDelete ="DELETE from orders WHERE product_id= "+order.getId();
-        db.execSQL(strDelete);
-        orders.remove(order);
-    } else {
-        order.setQuantity(order.getQuantity()-1);
-        String strUpdate = "UPDATE orders SET quantity = quantity -1 WHERE product_id = "+ order.getId();
-        db.execSQL(strUpdate);
+    private boolean decreaseOrderItem(Context mContext, int position) {
+        OrderHelper orderHelper = new OrderHelper(mContext);
+        SQLiteDatabase db = orderHelper.getWritableDatabase();
+        Log.i("Helloooo",orders.get(position).getQuantity().toString());
+        if(orders.get(position).getQuantity()==1) {
+            //quantity =1 -> xoa
+            Log.i("position",String.valueOf(position));
+            String strDelete ="DELETE from orders WHERE product_id= "+orders.get(position).getId();
+            Log.i("Helloooo","This 1");
+            db.execSQL(strDelete);
+            orders.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position,getItemCount());
+            Log.i("Array size",String.valueOf(getItemCount()));
+            db.close();
+        } else {
+            Log.i("position",String.valueOf(position));
+            orders.get(position).setQuantity(orders.get(position).getQuantity()-1);
+            String strUpdate = "UPDATE orders SET quantity = quantity -1 WHERE product_id = "+ orders.get(position).getId();
+            db.execSQL(strUpdate);
+            notifyItemChanged(position);
+            Log.i("Array size",String.valueOf(getItemCount()));
+            db.close();
+        }
+        return true;
     }
-    db.close();
-    return true;
-}
 
 
 

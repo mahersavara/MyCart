@@ -14,26 +14,44 @@
     android:background="@color/colorBackground">
 
 
+
+
     <SearchView
+        android:searchIcon="@drawable/shape_search"
         android:id="@+id/searchProduct"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/shape_search"
         android:iconifiedByDefault="false"
         android:queryBackground="@android:color/transparent"
         android:queryHint="Search Product"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.175"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </SearchView>
+    <ImageButton
+        android:id="@+id/search_button"
+        app:layout_constraintRight_toRightOf="@id/searchProduct"
+        app:layout_constraintTop_toTopOf="@id/searchProduct"
+        app:layout_constraintBottom_toBottomOf="@id/searchProduct"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:src="@drawable/ic_search"
+        android:background="@drawable/shape_search"
+        android:backgroundTint="@color/colorDivider"
+        tools:layout_editor_absoluteX="336dp"
+        tools:layout_editor_absoluteY="16dp" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:id="@+id/ProductList"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"

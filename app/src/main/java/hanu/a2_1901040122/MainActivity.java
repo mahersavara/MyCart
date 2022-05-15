@@ -17,7 +17,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -46,11 +48,13 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ProductAdapter adapter;
     List<Product> products = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         recyclerView = findViewById(R.id.ProductList);
+
 
 
 
@@ -111,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
                             recyclerView.setAdapter(adapter);
                             recyclerView.setLayoutManager(gridLayoutManager);
 
+
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -125,19 +131,34 @@ public class MainActivity extends AppCompatActivity {
 
 
         SearchView searchView = findViewById(R.id.searchProduct);
+        ImageButton searchBtn = findViewById(R.id.search_button);
 //        SearchView searchView = (SearchView) searchItem.getActionView();
 
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+//                Toast.makeText(MainActivity.this,  searchView.getQuery().toString(), Toast.LENGTH_SHORT).show();
+                adapter.getFilter().filter(searchView.getQuery().toString());
+            }
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                adapter.getFilter().filter(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+//                try {
+//                    Thread.sleep(5000);
+//                    adapter.getFilter().filter(newText);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 return false;
             }
         });
