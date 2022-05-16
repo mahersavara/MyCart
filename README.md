@@ -3,5 +3,7 @@ Simply Hell Cart Wrote by ME with Android
 
 ## Library Using:
   `RecycleView
-   FireBase
+   DB SQLite
+   Async+Executer
+   Filterable
    ...`
